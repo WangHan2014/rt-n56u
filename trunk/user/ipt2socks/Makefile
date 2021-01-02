@@ -23,4 +23,3 @@ clean:
 
 romfs:
 	$(ROMFSINST) -p +x $(THISDIR)/$(SRC_DIR)/ipt2socks /usr/bin/ipt2socks
-

@@ -4236,7 +4236,9 @@ RTMP_STRING *GetAuthMode(CHAR auth)
 #define	LINE_LEN	(4+33+20+23+9+9+7+3)	/* Channel+SSID+Bssid+Security+Signal+WiressMode+ExtCh+NetworkType*/
 
 
-
+#ifdef WSC_INCLUDED
+#define	WPS_LINE_LEN	(4+5)	/* WPS+DPID*/
+#endif
 #define BCNREP_LINE_LEN 10
 
 
@@ -4332,9 +4334,9 @@ VOID RTMPCommSiteSurveyData(
 		sprintf(msg + strlen(msg), "%-3s", " In");
 
 	/* SSID Length */
-//	sprintf(msg + strlen(msg), " %-8d", pBss->SsidLen);
+	//sprintf(msg + strlen(msg), " %-8d", pBss->SsidLen);
 
-//	sprintf(msg + strlen(msg), "\n");
+	//sprintf(msg + strlen(msg), "\n");
 	return;
 }
 
@@ -4619,7 +4621,9 @@ VOID RTMPIoctlGetSiteSurvey(
 	UINT32 TotalLen, BufLen = IW_SCAN_MAX_DATA;
 	BSS_TABLE *pScanTab;
 	pScanTab = &pAdapter->ScanTab;
-
+#ifdef WSC_INCLUDED
+max_len += WPS_LINE_LEN;
+#endif
 max_len += BCNREP_LINE_LEN;
 
 #ifdef APCLI_OWE_SUPPORT
@@ -4687,7 +4691,9 @@ max_len += OWETRANSIE_LINE_LEN;
 //	sprintf(msg + strlen(msg), "\n");
 	sprintf(msg + strlen(msg), "%-4s%-33s%-20s%-23s%-9s%-9s%-7s%-3s\n",
 			"Ch", "SSID", "BSSID", "Security", "Signal(%)", "W-Mode", " ExtCH", " NT");
-
+#ifdef WSC_INCLUDED
+	sprintf(msg + strlen(msg) - 1, "%-4s%-5s\n", " WPS", " DPID");
+#endif /* WSC_INCLUDED */
 	//sprintf(msg + strlen(msg) - 1, "%-8s\n", " BcnRept");
 #ifdef APCLI_OWE_SUPPORT
 		sprintf(msg + strlen(msg) - 1, "%-10s\n", " OWETranIe");
@@ -4719,7 +4725,22 @@ max_len += OWETRANSIE_LINE_LEN;
 		/*No*/
 		//sprintf(msg + strlen(msg), "%-4d", i);
 		RTMPCommSiteSurveyData(msg, pBss, TotalLen);
+#ifdef WSC_INCLUDED
 
+		/*WPS*/
+		if (pBss->WpsAP & 0x01)
+			sprintf(msg + strlen(msg) - 1, "%-4s", " YES");
+		else
+			sprintf(msg + strlen(msg) - 1, "%-4s", "  NO");
+
+		if (pBss->WscDPIDFromWpsAP == DEV_PASS_ID_PIN)
+			sprintf(msg + strlen(msg), "%-5s", " PIN");
+		else if (pBss->WscDPIDFromWpsAP == DEV_PASS_ID_PBC)
+			sprintf(msg + strlen(msg), "%-5s", " PBC");
+		else
+			sprintf(msg + strlen(msg), "%-5s", " ");
+
+#endif /* WSC_INCLUDED */
 		//sprintf(msg + strlen(msg), "%-8s", pBss->FromBcnReport ? " YES" : " NO");
 
 #ifdef APCLI_OWE_SUPPORT
@@ -4817,7 +4838,9 @@ VOID RTMPIoctlGetSiteSurvey(
 
 	sprintf(msg+strlen(msg)-1, "%-11s%-10s%-6s%-6s%-6s%-7s\n", " STA_COUNT", " MED_UTIL", " SNR0", " SNR1", " SNR2", " SNR3");	/*change anand for SNR.	Anjan: TODO: SNR2, SNR3 */
 	sprintf(msg+strlen(msg)-1, "%-4s\n", " Nss");
-
+#ifdef WSC_INCLUDED
+	sprintf(msg+strlen(msg)-1, "%-4s%-5s\n", " WPS", " DPID");
+#endif /* WSC_INCLUDED */
 
 	sprintf(msg+strlen(msg)-1, "%-10s\n", " BcnRept");
 
@@ -4852,7 +4875,20 @@ VOID RTMPIoctlGetSiteSurvey(
 		} else
 			sprintf(msg+strlen(msg)-1, " %-3s\n", "1");
 
+#ifdef WSC_INCLUDED
+	/*WPS*/
+		if (pBss->WpsAP & 0x01)
+			sprintf(msg+strlen(msg)-1, "%-4s", " YES");
+		else
+			sprintf(msg+strlen(msg)-1, "%-4s", "  NO");
 
+		if (pBss->WscDPIDFromWpsAP == DEV_PASS_ID_PIN)
+			sprintf(msg+strlen(msg), "%-5s", " PIN");
+		else if (pBss->WscDPIDFromWpsAP == DEV_PASS_ID_PBC)
+			sprintf(msg+strlen(msg), "%-5s", " PBC");
+		else
+			sprintf(msg+strlen(msg), "%-5s", " ");
+#endif /* WSC_INCLUDED */
 
 		sprintf(msg+strlen(msg), "%-7s\n", pBss->FromBcnReport ? " YES" : " NO");
 
@@ -5022,9 +5058,6 @@ VOID RTMPIoctlGetMacTableStaInfo(
 	if (pMacTab != NULL)
 		os_free_mem(pMacTab);
 }
-
-
-
 
 VOID RTMPIoctlGetDriverInfo(
 	IN PRTMP_ADAPTER pAd,
@@ -13944,11 +13977,6 @@ INT	Set_Led_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 		if (i >= 8)
 			break;
 	}
-
-	printk("\n%s\n", __func__);
-
-	for (j = 0; j < i; j++)
-		printk("%02x\n", (UINT)led_param[j]);
 
 #if defined(MT7615) || defined(MT7622)
 	if (IS_MT7615(pAd))
