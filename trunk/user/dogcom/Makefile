@@ -3,7 +3,7 @@ SRC_NAME = dogcom-1.6.2-pdv
 
 THISDIR = $(shell pwd)
 
-all: extract_test
+all:
 	$(MAKE) -C $(SRC_NAME) CC=$(CONFIG_CROSS_COMPILER_ROOT)/bin/mipsel-linux-uclibc-gcc
 	
 # # download_test:
