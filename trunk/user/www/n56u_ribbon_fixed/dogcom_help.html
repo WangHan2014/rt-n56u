@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dogcom使用引导</title>
+        <style>
+            body{
+                margin: 0 auto;
+                width:960px;
+                background-color:#282828;
+                color:white;
+            }
+            a{
+                color: #08c;
+            }
+            .center{
+                text-align: center;
+                justify-content: center;
+                align-items: center;
+            }
+            #option{
+                display: flex;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="center" id="view">
+            <h1>抱歉本人能力有限做不出漂亮的自动化页面</h1>
+            <h2>该页面用于生成dogcom启动代码</h2>
+            <h2>请将下列代码复制至<a style="text-decoration: none;" href="Advanced_Console_Content.asp">控制台</a>执行：</h2>
+            <textarea class="center" name="" id="code" cols="50" rows="1" readonly="true" style="resize:none"></textarea>
+            <div id="option" class="center">
+                <p><input onclick="setstr2()" checked="true" type="checkbox" name="" value="-d" />守护进程（-d）</p>
+                <p><input onclick="setstr3()" checked="true" type="checkbox" name="" value="-e"  />无限重试（-e）</p>
+            </div>
+            <button id="copy" onclick="copycode()">点我一键复制并跳转</button>
+            <h2>如下图所示</h2><!-- 换行 -->
+            <img src="img/help1.png"></img>
+            <h2 style="color: red;">如需查看更多高级选项请直接使用【dogcom】命令</h2>
+            <h2>=======================================</h2>
+            <h2>如果你还没有修改配置文件请复制下列代码至SSH</h2>
+            <h3>进行账号信息的填写 推荐使用PuTTY</h3>
+            <h3>只需要将配置文件中 中文信息全部改掉即可</h3>
+            <textarea class="center" name="" id="code" cols="50" rows="1" readonly="true" style="resize:none">nano /etc/dogcom/wuhues.conf</textarea>
+            <h3>填写完成后点击<a style="text-decoration: none;" href="Advanced_SettingBackup_Content.asp" target="_blank">这个</a>页面最底部【保存内部存储至闪存】如下图所示</h3>
+            <img src="img/help2.png"></img>
+            <h2 style="color: red;">每次保存修改配置文件后请重启路由器</h2>
+        </div>
+    </body>
+    <script>
+        str2=" -d";
+        str3=" -e";
+        str="";
+        window.onload=codeout();
+        function codeout(){
+            var str1="dogcom -m dhcp /etc/dogcom/wuhues.conf";
+            str=str1+str2+str3;
+            var code=document.getElementById("code");
+            code.innerHTML=str;
+        }
+        function setstr2(){
+            if(str2!=" -d"){
+                str2=" -d";
+            }
+            else{
+                str2="";
+            }
+            codeout();
+        }
+        function setstr3(){
+            if(str3!=" -e"){
+                str3=" -e";
+            }
+            else{
+                str3="";
+            }
+            codeout();
+        }
+        function copycode(){
+            code.select();
+            document.execCommand("Copy");
+            alert("复制成功!");
+            var copy=document.getElementById("copy");
+            copy.remove();
+            var view=document.getElementById("view");
+            var h2=document.createElement("h2");
+            view.appendChild(h2);
+            h2.innerHTML='正在跳转至跳转至<a style="text-decoration: none;" href="Advanced_Console_Content.asp">控制台</a>页面';
+            window.location.href="Advanced_Console_Content.asp";
+        }
+    </script>
+</html>
