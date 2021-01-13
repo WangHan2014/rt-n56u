@@ -24,9 +24,9 @@ ifeq ($(force_encrypt), y)
 endif
 
 ifeq ($(test), y)
-	CFLAGS += -std=gnu99 -Werror -DTEST
+	CFLAGS += -std=gnu99 -DTEST
 else
-	CFLAGS += -std=gnu99 -Werror
+	CFLAGS += -std=gnu99
 endif
 
 SOURCES = $(wildcard *.c) $(wildcard libs/*.c)
