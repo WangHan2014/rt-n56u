@@ -38,7 +38,25 @@
             <img src="img/help1.png"></img>
             <h2 style="color: red;">如需查看更多高级选项请直接使用【dogcom】命令</h2>
             <h2>=======================================</h2>
-            <h2>如果你还没有修改配置文件请点<a style="text-decoration: none;" href="wuhues.conf">这里</a>下载配置文件</h2>
+            <h2>如果你还没有配置文件请点击下载按钮并修改文件</h2>
+            <div class="center">
+            <textarea name="" readonly="true" id="code2" cols="50" rows="15" style="resize:none">
+server = '10.254.253.250'
+username = '你的上网账号'
+password = '你的上网密码'
+CONTROLCHECKSTATUS = '\x20'
+ADAPTERNUM = '\x08'
+host_ip = '10.99.248.235'
+IPDOG = '\x01'
+host_name = 'fuyumi'
+PRIMARY_DNS = '10.0.0.16'
+dhcp_server = '10.0.0.28'
+AUTH_VERSION = '\x2c\x00'
+mac = 0x你的mac地址小写随便填不能重复
+host_os = 'Windows 10'
+KEEP_ALIVE_VERSION = '\xdc\x02'
+ror_version = False</textarea></div>
+            <button id="copy" onclick="download('wuhues.conf')">下载配置文件</button>
             <h3>只需要将配置文件中 中文信息全部改掉即可</h3>
             <h3>填写完成后请使用WinSCP上传至下列目录</h3>
             <textarea class="center" name="" id="code" cols="50" rows="1" readonly="true" style="resize:none">/etc/dogcom/wuhues.conf</textarea>
@@ -53,7 +71,7 @@
         str="";
         window.onload=codeout();
         function codeout(){
-            var str1="dogcom -m dhcp /etc/dogcom/wuhues.zip";
+            var str1="dogcom -m dhcp /etc/dogcom/wuhues.conf";
             str=str1+str2+str3;
             var code=document.getElementById("code");
             code.innerHTML=str;
@@ -88,6 +106,16 @@
             view.appendChild(h2);
             h2.innerHTML='正在跳转至跳转至<a style="text-decoration: none;" href="Advanced_Console_Content.asp">控制台</a>页面';
             window.location.href="Advanced_Console_Content.asp";
+        }
+        function download(filename) {
+            var element = document.createElement('a');
+            var text = document.getElementById("code2").innerHTML
+            element.setAttribute('href', 'data:text/plain;charset=gb2312,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
         }
     </script>
 </html>
